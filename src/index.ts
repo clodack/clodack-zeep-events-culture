@@ -1,22 +1,25 @@
-import httpProxy from 'http-proxy';
 import express from 'express';
-import request from 'request';
 
 import { injectEnvFiles } from './envs';
+
+import { getCategories, getConfigs, getEvents } from './routes';
 
 injectEnvFiles('.env', '');
 
 const app = express();
 
-app.get('/afisha/list', (req, res) => {
-  const newURL = new URL(`${process.env.SERVER_URL}/api/events`)
-
-  newURL.searchParams.append('city', 'Москва');
-  newURL.searchParams.append('categoryIds[]', '460');
-
-  request(newURL.toString()).pipe(res);
+app.get('/events/list', (req, res) => {
+  getEvents(req.params || {}).pipe(res);
 })
 
-app.listen(process.env.SERVER_PORT || 8001, () => {
-  console.log(`Server starting in ${process.env.SERVER_PORT || 8001} port`);
+app.get('/events/categories', (req, res) => {
+  getCategories().pipe(res);
+})
+
+app.get('/events/config', (req, res) => {
+  getConfigs().pipe(res);
+})
+
+app.listen(process.env.SERVER_PORT || 8002, () => {
+  console.log(`Server starting in ${process.env.SERVER_PORT || 8002} port`);
 });
